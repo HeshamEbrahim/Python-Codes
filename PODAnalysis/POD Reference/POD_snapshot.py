@@ -1,7 +1,5 @@
 """
 
-Zhen Lu 2018/08/13
-
 An implementation of the POD with the snapshot method
 
 """
