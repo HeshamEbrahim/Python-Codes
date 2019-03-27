@@ -1,0 +1,10 @@
+# This file may be used to create a conda environment using:
+# $ conda enc create --file environment.yml
+
+name: balanceCal
+dependencies:
+- python>=3.6
+- matplotlib
+- numpy
+- scipy
+- pylint

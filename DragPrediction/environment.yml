@@ -1,0 +1,10 @@
+# This file may be used to create a conda environment using:
+# $ conda env create --file environment.yml
+
+name: dragPrediction
+dependencies:
+- python>=3.6
+- matplotlib
+- numpy
+- scipy
+- pylint
