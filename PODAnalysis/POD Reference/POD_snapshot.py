@@ -9,23 +9,23 @@ import numpy as np
 from scipy import linalg
 import argparse
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument('N', type=int, help='the number of snapshots')
-# parser.add_argument('M', type=int, help='the number of modes to be presented')
-# args = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument('N', type=int, help='the number of snapshots')
+parser.add_argument('M', type=int, help='the number of modes to be presented')
+args = parser.parse_args()
 
-file_number = 200 #args.N
-mode_number = 4 #args.M
+file_number = args.N
+mode_number = args.M
 
-file_prefix = 'H:\\2d POD\\State '
-file_suffix = '.csv'
+file_prefix = 'clip_POD0'
+file_suffix = 'csv'
 
 filename = 'POD.dat'
 
-var_names = ['Velocity[i] (m/s)', 'Velocity[j] (m/s)', 'Velocity[k] (m/s)']
+var_names = ['U0', 'U1', 'U2']
 
 # load the average data first
-data_ave = np.genfromtxt('H:\\2d POD\\Mean.csv',
+data_ave = np.genfromtxt('clip_ave.csv',
                          names=True,
                          delimiter=','
                         )
@@ -44,8 +44,7 @@ fp = np.memmap(filename,
 
 # read and calculate perturbation, store in fp
 for i in range(file_number):
-    i = i + 1 
-    file_name = ''.join([file_prefix,'{:d}'.format(i),file_suffix])
+    file_name = '.'.join([file_prefix,'{:d}'.format(i),file_suffix])
     data_ins = np.genfromtxt(file_name, names=True, delimiter=',')
 
     for j, var in enumerate(var_names):
