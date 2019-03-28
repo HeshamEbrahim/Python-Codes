@@ -15,7 +15,7 @@ args = parser.parse_args()
 file_number = args.N
 mode_number = args.M
 
-file_prefix = 'clip_POD0'
+file_prefix = 'State'
 file_suffix = 'csv'
 
 filename = 'POD.dat'
@@ -23,7 +23,7 @@ filename = 'POD.dat'
 var_names = ['U0', 'U1', 'U2']
 
 # load the average data first
-data_ave = np.genfromtxt('clip_ave.csv',
+data_ave = np.genfromtxt('Mean.csv',
                          names=True,
                          delimiter=','
                         )

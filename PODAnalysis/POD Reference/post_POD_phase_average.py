@@ -2,10 +2,10 @@ import numpy as np
 
 num_bins = 8
 
-file_prefix = 'clip_POD0'
+file_prefix = 'State'
 file_suffix = 'csv'
 
-filename = 'clip_ave.csv'
+filename = 'Mean.csv'
 data = np.genfromtxt(filename, delimiter=',', skip_header=1)
 
 data_ave = np.zeros( (num_bins,) + data.shape )

@@ -83,5 +83,5 @@ fig.subplots_adjust(
         hspace = space_height/subplot_height
         )
 
-fig.savefig('fig_POD_lambda.eps')
+# fig.savefig('fig_POD_lambda.eps')
 fig.savefig('fig_POD_lambda.png')

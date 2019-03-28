@@ -98,7 +98,7 @@ for i in range(num_mode):
             hspace = space_height/subplot_height
             )
 
-    fig.savefig('fig_POD_PSD_mode{:d}.eps'.format(i))
+#     fig.savefig('fig_POD_PSD_mode{:d}.eps'.format(i))
     fig.savefig('fig_POD_PSD_mode{:d}.png'.format(i))
-
+#     plt.show()
     plt.close()
