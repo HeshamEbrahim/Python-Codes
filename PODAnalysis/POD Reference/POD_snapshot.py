@@ -7,13 +7,16 @@ import numpy as np
 from scipy import linalg
 import argparse
 
-parser = argparse.ArgumentParser()
-parser.add_argument('N', type=int, help='the number of snapshots')
-parser.add_argument('M', type=int, help='the number of modes to be presented')
-args = parser.parse_args()
+# parser = argparse.ArgumentParser()
+# parser.add_argument('N', type=int, help='the number of snapshots')
+# parser.add_argument('M', type=int, help='the number of modes to be presented')
+# args = parser.parse_args()
 
-file_number = args.N
-mode_number = args.M
+# file_number = args.N
+# mode_number = args.M
+
+file_number = 10
+mode_number = 5
 
 file_prefix = 'State'
 file_suffix = 'csv'
@@ -45,6 +48,7 @@ for i in range(file_number):
     file_name = '.'.join([file_prefix,'{:d}'.format(i),file_suffix])
     data_ins = np.genfromtxt(file_name, names=True, delimiter=',')
 
+    # u'(x,t) = U(x) - ui(x,t)
     for j, var in enumerate(var_names):
         data[:,j] = data_ins[var] - data_ave[var]
         
@@ -64,6 +68,7 @@ for i in range(file_number):
                        offset=i*data_len*data_bytesize
                       )
     
+# R(X,X') = U_T * U - squares the matrix 'C' and correlates U&U U&V V&V
     matrix_cov[i,i] = np.sum( np.square(data_i) )
     
     for j in range(i+1,file_number):
@@ -78,13 +83,14 @@ for i in range(file_number):
         matrix_cov[i,j] = np.sum( np.multiply( data_i, data_j ) )
         matrix_cov[j,i] = matrix_cov[i,j]
 
-# eigen decomposition
+# Compute e=eigenvalues and v=eigenvectors 
 e, v = linalg.eig(matrix_cov)
 
-# sort eigenvalues and eigenvectors
+# Sort in eigenvalues in ascending order
 idx = np.argsort( e )[::-1]
 
 # the matrix is symmetric, all eigenvalues are non-negative real
+# denominator for discrete-to-norm
 eig = np.real(e)[idx]
 sigma = np.sqrt(eig)
 
