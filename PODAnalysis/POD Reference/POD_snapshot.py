@@ -108,6 +108,7 @@ for i in range(file_number):
                      offset=i*data_len*data_bytesize
                     ).flatten()
 
+    # POD Modes = sum(Vn(i)*Un)/abs(sum(Vn(i)*Un))
     for j in range(mode_number):
         modes[:,j] += data*v[i,j]
         
