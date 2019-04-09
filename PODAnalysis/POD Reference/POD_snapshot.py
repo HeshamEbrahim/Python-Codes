@@ -1,25 +1,26 @@
-"""
+##
 
-An implementation of the POD with the snapshot method
+"Proper Orthogonal Decomposition using the Snapshot Method"
 
-"""
+##
+
 import numpy as np
 from scipy import linalg
 import argparse
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument('N', type=int, help='the number of snapshots')
-# parser.add_argument('M', type=int, help='the number of modes to be presented')
-# args = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument('N', type=int, help='the number of snapshots')
+parser.add_argument('M', type=int, help='the number of modes to be presented')
+args = parser.parse_args()
 
-# file_number = args.N
-# mode_number = args.M
+file_number = args.N
+mode_number = args.M
 
 file_number = 10
 mode_number = 5
 
-file_prefix = 'State'
-file_suffix = 'csv'
+file_prefix = 'State '
+file_suffix = '.csv'
 
 filename = 'POD.dat'
 
@@ -45,7 +46,9 @@ fp = np.memmap(filename,
 
 # read and calculate perturbation, store in fp
 for i in range(file_number):
-    file_name = '.'.join([file_prefix,'{:d}'.format(i),file_suffix])
+    i = i+1 # iterator
+    NumtoStr = str(i)
+    file_name = file_prefix+NumtoStr+file_suffix
     data_ins = np.genfromtxt(file_name, names=True, delimiter=',')
 
     # u'(x,t) = U(x) - ui(x,t)
@@ -110,7 +113,7 @@ for i in range(file_number):
 
     # POD Modes = sum(Vn(i)*Un)/abs(sum(Vn(i)*Un))
     for j in range(mode_number):
-        modes[:,j] += data*v[i,j]
+        modes[:,j] = (modes[:,j]+data*v[i,j])
         
 for j in range(mode_number):
     modes[:,j] /= sigma[j]
