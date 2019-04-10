@@ -16,15 +16,13 @@ args = parser.parse_args()
 file_number = args.N
 mode_number = args.M
 
-file_number = 10
-mode_number = 5
-
 file_prefix = 'State '
 file_suffix = '.csv'
 
 filename = 'POD.dat'
 
 var_names = ['U0', 'U1', 'U2']
+var_coordinates = ['X', 'Y', 'Z']
 
 # load the average data first
 data_ave = np.genfromtxt('Mean.csv',
@@ -36,6 +34,7 @@ data_ave = np.genfromtxt('Mean.csv',
 data = np.empty((data_ave.size,len(var_names)))
 data_len = data_ave.size*len(var_names)
 data_bytesize = data_ave.dtype[0].itemsize
+coordinates = np.empty((data_ave.size,len(var_coordinates)))
 
 # memmap
 fp = np.memmap(filename, 
@@ -45,8 +44,7 @@ fp = np.memmap(filename,
                order='F')
 
 # read and calculate perturbation, store in fp
-for i in range(file_number):
-    i = i+1 # iterator
+for i in range(1,file_number):
     NumtoStr = str(i)
     file_name = file_prefix+NumtoStr+file_suffix
     data_ins = np.genfromtxt(file_name, names=True, delimiter=',')
@@ -55,9 +53,13 @@ for i in range(file_number):
     for j, var in enumerate(var_names):
         data[:,j] = data_ins[var] - data_ave[var]
         
-    fp[:,i] = data.flatten()
+    fp[:,i-1] = data.flatten()
 
 del fp
+
+# get coordinates
+for i, var in enumerate(var_coordinates):
+    coordinates[:,i] = data_ave[var]
 
 # compose the covariance matrix
 matrix_cov = np.empty((file_number, file_number))
@@ -120,14 +122,14 @@ for j in range(mode_number):
 
 # save the modes
 for j in range(mode_number):
-    file_name = '.'.join(['POD_mode',
-                          '{:d}'.format(j),
-                          file_suffix])
-    np.savetxt(file_name,
-               modes[:,j].reshape(data_ave.size,len(var_names)),
+    NumtoStr = str(j)
+    file_name = 'POD_mode '+NumtoStr+'.txt'
+    MODES = np.append(coordinates,modes[:,j].reshape(data_ave.size,len(var_names)), axis=1)
+
+    np.savetxt(file_name,MODES,
                fmt='%12.6e',
                delimiter=',',
-               header=','.join(var_names),
+               header="X, Y, Z, U0, U1, U2",
                comments=''
               )
 
