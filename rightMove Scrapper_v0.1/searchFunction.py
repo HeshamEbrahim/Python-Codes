@@ -57,6 +57,6 @@ def search(inputText):
     except:
         searchOutput = 'N/A'
 
-    print(searchOne, searchTwo, searchThree, searchFour, searchFive)
+    #print(searchOne, searchTwo, searchThree, searchFour, searchFive)
 
     return(searchOutput)
