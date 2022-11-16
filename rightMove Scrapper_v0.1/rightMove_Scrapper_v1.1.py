@@ -118,6 +118,9 @@ for property in cleanLinks:
         noOfBeds = soup.select('p')[2].text
         priceLink = soup.body.find('div', attrs={'class': '_1gfnqJ3Vtd1z40MlC0MzXu'})
         price = priceLink.select('span')[0].text
+        adDateLink = soup.body.find('div', attrs={'class': '_2nk2x6QhNB1UrxdI5KpvaF'})
+        date = re.sub('<div class="_2nk2x6QhNB1UrxdI5KpvaF">', '', str(adDateLink))
+        date = re.sub('</div>', '', str(date))
         newIds = re.findall(r'\b\d+\b', str(cleanLinks[i])) # use new property id
         mapLocation = np.char.add('https://www.rightmove.co.uk/properties/', str(newIds[0]))
         floorPlan = np.char.add(mapLocation, '#/floorplan?activePlan=1&channel=RES_BUY')
@@ -141,7 +144,7 @@ for property in cleanLinks:
         end = time()
         print(str(i)+' out of '+str(len(cleanLinks))+f' It took {round(end - start,2)} seconds!') 
 
-        data = [str(price), str(propertyAddress), str(typeOfProperty), str(noOfBeds), str(foundFloorPlanImage), str(mapLocation)]
+        data = [str(price), str(propertyAddress), str(typeOfProperty), str(noOfBeds), str(foundFloorPlanImage), str(mapLocation), str(date)]
         all_info = np.append(all_info, data)
         counter = counter + 1
     else:
@@ -274,8 +277,9 @@ for info in range(len(all_info)):
         continue        
 
 # split the array into equally divided arrays and convert to pandas for further processing
-updated_info = np.split(updated_info, len(updated_info)/7) 
-updated_info = pd.DataFrame(updated_info, columns = ['price', 'propertyAddress', 'typeOfProperty', 'noOfBeds', 'foundFloorPlanImage', 'mapLocation', 'area'])
+updated_info = np.split(updated_info, len(updated_info)/8) 
+updated_info = pd.DataFrame(updated_info, columns = ['price', 'propertyAddress', 'typeOfProperty', 'noOfBeds', 'foundFloorPlanImage', 'mapLocation', 'date', 'area'])
+updated_info = updated_info.drop(columns='foundFloorPlanImage')
 print("\n")
 # print(updated_info)
 print('Processing images complete...')
@@ -283,12 +287,21 @@ print("\n")
 # this should load the old file and append any new data found to it making sure it's all unique data
 # and not repeated 
 
-updated_info.to_csv('output.csv', index=False) # comment out if you want to use the old data
+datahandling = input('Would you like to combine the data? (yes/no): ')
+print("\n")
 
-loadData = pd.read_csv(r'output.csv')
-frames = [loadData, updated_info]
-combinedData = pd.concat(frames)
-combinedData = combinedData.drop_duplicates(subset=['foundFloorPlanImage'])
+if datahandling == 'yes':
+    print("\n")
+    pathOfOldFile = input('Enter path of the file.csv you would like to combine the data to: ')
+    loadData = pd.read_csv(pathOfOldFile)
+    frames = [loadData, updated_info]
+    combinedData = pd.concat(frames)
+    combinedData = combinedData.drop_duplicates(subset=['mapLocation'])
+else:
+    updated_info.to_csv('output_basic.csv', index=False) 
+    combinedData = updated_info.drop_duplicates(subset=['mapLocation'])
+
+print("\n")
 
 combinedData['price'] = combinedData['price'].replace('[\£,]', '', regex=True).astype(float)
 combinedData['area'] = combinedData['area'].astype(float)
