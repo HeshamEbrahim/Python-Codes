@@ -152,14 +152,16 @@ if st.button('Run'):
         ad = requests.get(property)
         soup = BeautifulSoup(ad.content, "html.parser")
 
+        generalInfo = soup.body.find('div', attrs={'_4hBezflLdgDMdFtURKTWh'})
+        findTenure = int(len(generalInfo.select('dd')))
+
         # ensures only freehold properties
-        if soup.select('p')[4].text.lower() == 'freehold' or soup.select('p')[6].text.lower() == 'freehold':
+        if generalInfo.select('dd')[findTenure-1].text.lower() == 'freehold':
 
             # extract property data
             propertyAddress = soup.select('h1')[0].text
-            propertyType = soup.select('p')[0].text
-            typeOfProperty = soup.select('p')[1].text
-            noOfBeds = soup.select('p')[2].text
+            propertyType = generalInfo.select('dd')[0].text
+            noOfBeds = generalInfo.select('dd')[2].text
             priceLink = soup.body.find('div', attrs={'class': '_1gfnqJ3Vtd1z40MlC0MzXu'})
             price = priceLink.select('span')[0].text
             adDateLink = soup.body.find('div', attrs={'class': '_2nk2x6QhNB1UrxdI5KpvaF'})
@@ -186,12 +188,12 @@ if st.button('Run'):
             
             i = i+1
             end = time()
-            with st_capture(output.code):
-                print(str(i)+' out of '+str(len(cleanLinks))+f' It took {round(end - start,2)} seconds!') 
+            print(str(i)+' out of '+str(len(cleanLinks))+f' It took {round(end - start,2)} seconds!') 
 
-            data = [str(price), str(propertyAddress), str(typeOfProperty), str(noOfBeds), str(foundFloorPlanImage), str(mapLocation), str(date)]
+            data = [str(price), str(propertyAddress), str(propertyType), str(noOfBeds), str(foundFloorPlanImage), str(mapLocation), str(date)]
             all_info = np.append(all_info, data)
             counter = counter + 1
+
         else:
             #print('skipped...')
             i = i+1
@@ -295,9 +297,9 @@ if st.button('Run'):
         with st_capture(output.code):
             print(str(info+1)+' out of '+str(len(all_info)))
         try:
-            if not all_info[info][4] == 'None':
+            if not all_info[info][3] == 'None':
                 # Load the img
-                req = urllib.request.urlopen(all_info[info][4])
+                req = urllib.request.urlopen(all_info[info][3])
                 arr = np.asarray(bytearray(req.read()))
                 img = cv2.imdecode(arr, -1) # 'Load it as it is'
 
@@ -325,8 +327,8 @@ if st.button('Run'):
             continue        
 
     # split the array into equally divided arrays and convert to pandas for further processing
-    updated_info = np.split(updated_info, len(updated_info)/8) 
-    updated_info = pd.DataFrame(updated_info, columns = ['price', 'propertyAddress', 'typeOfProperty', 'noOfBeds', 'foundFloorPlanImage', 'mapLocation', 'date', 'area'])
+    updated_info = np.split(updated_info, len(updated_info)/7) 
+    updated_info = pd.DataFrame(updated_info, columns = ['price', 'propertyAddress', 'noOfBeds', 'foundFloorPlanImage', 'mapLocation', 'date', 'area'])
     updated_info = updated_info.drop(columns='foundFloorPlanImage')
     # Tidy data up
     updated_info['noOfBeds'] = updated_info['noOfBeds'].str[1:]
