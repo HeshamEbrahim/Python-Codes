@@ -43,9 +43,8 @@ output = st.empty()
 
 # Streamlit Code
 image = Image.open('logo.png')
-st.image(image, width=300)
-st.write('Finding freehold property on rightmove made easy. <br> Are you tired of scrolling through 100s of ads to find your right home? <br> Then look no further...', unsafe_allow_html=True)
-
+st.image(image, width=100)
+st.write('Discover Your Dream Home with Ease! <br> Say goodbye to endless hours of scrolling through countless ads on Rightmove. <br> With Freehold Finders, finding the perfect freehold property has never been easier! Get ready to say "Yes!" to your new abode.', unsafe_allow_html=True)
 
 # URL = input('URL: ')
 # userMaxPrice = input('Enter Maximum Price: ')
@@ -188,7 +187,8 @@ if st.button('Run'):
             
             i = i+1
             end = time()
-            print(str(i)+' out of '+str(len(cleanLinks))+f' It took {round(end - start,2)} seconds!') 
+            with st_capture(output.code):
+                print(str(i)+' out of '+str(len(cleanLinks))+f' It took {round(end - start,2)} seconds!') 
 
             data = [str(price), str(propertyAddress), str(propertyType), str(noOfBeds), str(foundFloorPlanImage), str(mapLocation), str(date)]
             all_info = np.append(all_info, data)
@@ -297,9 +297,9 @@ if st.button('Run'):
         with st_capture(output.code):
             print(str(info+1)+' out of '+str(len(all_info)))
         try:
-            if not all_info[info][3] == 'None':
+            if not all_info[info][4] == 'None':
                 # Load the img
-                req = urllib.request.urlopen(all_info[info][3])
+                req = urllib.request.urlopen(all_info[info][4])
                 arr = np.asarray(bytearray(req.read()))
                 img = cv2.imdecode(arr, -1) # 'Load it as it is'
 
@@ -314,6 +314,7 @@ if st.button('Run'):
                     rawText = pytesseract.image_to_string(img, config=configs)
                 except:
                     continue
+                    
                 rawText = rawText.lower()
                 rawText = re.sub(r',', '', str(rawText)) # removes all commas 
                 rawText = re.sub(r'\b\.\d+\b', '', str(rawText)) # removes all ints
@@ -327,9 +328,10 @@ if st.button('Run'):
             continue        
 
     # split the array into equally divided arrays and convert to pandas for further processing
-    updated_info = np.split(updated_info, len(updated_info)/7) 
-    updated_info = pd.DataFrame(updated_info, columns = ['price', 'propertyAddress', 'noOfBeds', 'foundFloorPlanImage', 'mapLocation', 'date', 'area'])
+    updated_info = np.split(updated_info, len(updated_info)/8) 
+    updated_info = pd.DataFrame(updated_info, columns = ['price', 'propertyAddress', 'propertyType', 'noOfBeds', 'foundFloorPlanImage', 'mapLocation', 'date', 'area'])
     updated_info = updated_info.drop(columns='foundFloorPlanImage')
+
     # Tidy data up
     updated_info['noOfBeds'] = updated_info['noOfBeds'].str[1:]
     date = pd.DataFrame(updated_info['date'].str.split('on', expand=True))
